@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+
+typedef struct {
+    void **dados;     // Ponteiro genérico para os elementos da pilha
+    int topo;         // Índice do topo da pilha
+    int capacidade;   // Capacidade total da pilha
+} Pilha;
+
+// Função para criar a pilha
+Pilha* criarPilha(int capacidadeInicial) {
+    Pilha *pilha = (Pilha *) malloc(sizeof(Pilha));
+    if (pilha == NULL) return NULL;
+
+    pilha->dados = (void **) malloc(sizeof(void*) * capacidadeInicial);
+    pilha->topo = -1;
+    pilha->capacidade = capacidadeInicial;
+
+    return pilha;
+}
+
+// Função para dobrar a capacidade da pilha
+void dobrarCapacidade(Pilha *pilha) {
+    int novaCapacidade = pilha->capacidade * 2;
+    void **novoDados = (void **) malloc(sizeof(void*) * novaCapacidade);
+
+    // Copia os elementos para o novo array
+    for (int i = 0; i <= pilha->topo; i++) {
+        novoDados[i] = pilha->dados[i];
+    }
+
+    free(pilha->dados);  // Libera o array antigo
+    pilha->dados = novoDados;
+    pilha->capacidade = novaCapacidade;
+}
+
+// Função para empilhar um novo elemento
+int empilhar(Pilha *pilha, void *elemento) {
+    // Verifica se a pilha está cheia
+    if (pilha->topo + 1 == pilha->capacidade) {
+        dobrarCapacidade(pilha);
+    }
+
+    // Move o índice `topo` para o próximo e insere o novo elemento
+    pilha->dados[++pilha->topo] = elemento;
+    return 1;  // Sucesso
+}
+
+// Função para desempilhar o elemento do topo
+void* desempilhar(Pilha *pilha) {
+    if (pilha->topo == -1) return NULL;  // Pilha está vazia
+
+    void *elementoRemovido = pilha->dados[pilha->topo--];
+    return elementoRemovido;
+}
+
+// Função para limpar e liberar a pilha
+void limparPilha(Pilha *pilha) {
+    if (pilha != NULL) {
+        free(pilha->dados);
+        free(pilha);
+    }
+}
+
+}
